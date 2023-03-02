@@ -1,5 +1,8 @@
 # Open Source, Self-Hosted Chat GPT APP
 
+https://user-images.githubusercontent.com/19983429/222471399-4f08bc58-6a3b-4769-8c6f-e981a58e5563.mp4
+
+
 ## Stack
 
 - Prisma,
