@@ -25,14 +25,14 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         withNormalizeCSS
         theme={{
           globalStyles: (theme) => ({
-            // html: {
-            //   width: "100%",
-            //   overflowX: "hidden",
-            // },
-            // body: {
-            //   width: "100%",
-            //   overflowX: "hidden",
-            // },
+            html: {
+              width: "100%",
+              overflowX: "hidden",
+            },
+            body: {
+              width: "100%",
+              overflowX: "hidden",
+            },
           }),
 
           primaryColor: "orange",
