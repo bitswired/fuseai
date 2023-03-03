@@ -7,6 +7,7 @@
 - NextJS
 - TypeScript
 - Sqlite
+- Mantine (React comoponent library)
 
 ## How to run
 

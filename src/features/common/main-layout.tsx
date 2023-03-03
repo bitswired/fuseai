@@ -1,76 +1,121 @@
 import {
-  AppShell,
-  Burger,
+  ActionIcon,
   Button,
-  Header,
-  List,
-  Navbar,
+  createStyles,
+  Grid,
+  Group,
   Stack,
   Text,
   ThemeIcon,
+  useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { spotlight } from "@mantine/spotlight";
-import { IconCircleDashed } from "@tabler/icons-react";
+import {
+  IconBrain,
+  IconMessageCircle,
+  IconMoonStars,
+  IconSettings,
+  IconSun,
+  IconTemplate,
+} from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
+
+interface MenuItemProps {
+  icon: React.ReactNode;
+  text: string;
+  path: string;
+}
+function MenuItem({ icon, text, path }: MenuItemProps) {
+  const { pathname } = useRouter();
+
+  console.log(path, pathname);
+
+  return (
+    <Link href={path}>
+      <Button
+        leftIcon={icon}
+        variant="subtle"
+        color={pathname.startsWith(path) ? "cyan" : "primary"}
+      >
+        {text}
+      </Button>
+    </Link>
+  );
+}
+
+function Menu() {
+  return (
+    <Stack spacing="xs" align="stretch">
+      <MenuItem path="/settings" text="Settings" icon={<IconSettings />} />
+      <MenuItem path="/chats" text="Chats" icon={<IconMessageCircle />} />
+      <MenuItem path="/templates" text="Templates" icon={<IconTemplate />} />
+    </Stack>
+  );
+}
+
+const useStyles = createStyles((theme) => ({
+  header: {
+    height: "70px",
+    borderBottom: "1px solid #eaeaea",
+    // backgroundColor: "red",
+  },
+  menu: {
+    height: "calc(100vh - 70px)",
+    padding: "32px",
+    borderRight: "1px solid #eaeaea",
+    // backgroundColor: "blue",
+  },
+  main: {
+    height: "calc(100vh - 70px)",
+    // backgroundColor: "green",
+  },
+}));
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
   const [isMenuOpened, toggleMenuOpened] = useToggle();
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const dark = colorScheme === "dark";
+
+  const { classes } = useStyles();
   return (
-    <AppShell
-      styles={{
-        main: {
-          background:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        },
-      }}
-      navbarOffsetBreakpoint="sm"
-      asideOffsetBreakpoint="sm"
-      navbar={
-        (isMenuOpened && (
-          <Navbar p="md" hidden={!isMenuOpened} width={{ sm: 200, lg: 300 }}>
-            <Stack>
-              <Button onClick={() => spotlight.open()}>Open Spotlight</Button>
-              <List>
-                <Link href="/chat" passHref>
-                  <List.Item
-                    icon={
-                      <ThemeIcon color="blue" size={24} radius="xl">
-                        <IconCircleDashed size="1rem" />
-                      </ThemeIcon>
-                    }
-                  >
-                    <Text>Chat</Text>
-                  </List.Item>
-                </Link>
-              </List>
-            </Stack>
-          </Navbar>
-        )) ||
-        undefined
-      }
-      header={
-        <Header height={{ base: 50, md: 70 }} p="md">
-          <div
-            style={{ display: "flex", alignItems: "center", height: "100%" }}
+    <Grid>
+      <Grid.Col className={classes.header} span={12}>
+        <Group>
+          <Group pl={32} align="center" w="max-content" h="100%">
+            <ThemeIcon
+              variant="gradient"
+              gradient={{ from: "orange", to: "cyan" }}
+            >
+              <IconBrain size={64} />
+            </ThemeIcon>
+            <Text color="orange" weight="bold" size="2em">
+              AI Chat
+            </Text>
+          </Group>
+
+          <ActionIcon
+            variant="filled"
+            ml="auto"
+            mr={64}
+            color={dark ? "orange" : "orange"}
+            onClick={() => toggleColorScheme()}
+            title="Toggle color scheme"
           >
-            <Burger
-              opened={isMenuOpened}
-              onClick={() => toggleMenuOpened()}
-              size="sm"
-              color={theme.colors.gray[6]}
-              mr="xl"
-            />
-            <Text>Chat App</Text>
-          </div>
-        </Header>
-      }
-    >
-      {children}
-    </AppShell>
+            {dark ? <IconSun size="1.1rem" /> : <IconMoonStars size="1.1rem" />}
+          </ActionIcon>
+        </Group>
+      </Grid.Col>
+      <Grid.Col className={classes.menu} span={2}>
+        <Menu />
+      </Grid.Col>
+      <Grid.Col className={classes.main} span={10}>
+        <main id="main">{children}</main>
+      </Grid.Col>
+    </Grid>
   );
 }

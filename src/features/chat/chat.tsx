@@ -1,113 +1,84 @@
 import { api } from "@/utils/api";
 import {
+  Affix,
+  Box,
   Button,
+  createStyles,
   Drawer,
+  Grid,
   Group,
-  List,
   LoadingOverlay,
-  Paper,
-  Stack,
-  Text,
-  Textarea,
+  MediaQuery,
   TextInput,
-  ThemeIcon,
-  Title,
 } from "@mantine/core";
-import {
-  IconCircleDashed,
-  IconInfoCircle,
-  IconRobot,
-  IconUser,
-} from "@tabler/icons-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { CurrentChat } from "./current-chat";
+import { ChatForm } from "./form";
+import { ChatMenu } from "./menu";
 
-function CurrentChat() {
-  const { query } = useRouter();
+const useStylesDesktop = createStyles((theme) => ({
+  container: {
+    width: "100%",
+    height: "calc(100vh - 70px)",
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gridTemplateRows: "repeat(4, 1fr)",
+    gap: 16,
+    padding: 32,
+  },
+  menu: {
+    p: 32,
+    gridRowStart: 1,
+    gridRowEnd: "span 4",
+    background: "rgba(0,0,0,0.05)",
+  },
+  chat: {
+    padding: 32,
+    overflow: "scroll",
+    gridRowStart: 1,
+    gridRowEnd: "span 3",
+    gridColumnStart: 2,
+    gridColumnEnd: "span 3",
+    background: "rgba(0,0,0,0.1)",
+  },
+  form: {
+    p: 32,
+    gridRowStart: 4,
+    gridRowEnd: "span 1",
+    gridColunStart: 2,
+    gridColumnEnd: "span 4",
+  },
+}));
 
-  const utils = api.useContext();
-  const addToChat = api.chat.addToChat.useMutation({
-    onSuccess: () => {
-      utils.invalidate().catch(console.error);
-    },
-  });
-
-  const [text, setText] = useState("");
-
-  const currentChat = api.chat.getChatById.useQuery(
-    {
-      id: parseInt(query.id as string),
-    },
-    { enabled: !!query.id }
-  );
-
-  const messages = currentChat.data?.messages ?? [];
-
-  return (
-    <Stack pos="relative" p={32} sx={{ borderLeft: "1px solid black" }}>
-      <LoadingOverlay visible={addToChat.isLoading} />
-
-      {currentChat.data && (
-        <>
-          <Title>{currentChat.data?.name}</Title>
-          <Stack p={32} h="500px" sx={{ overflow: "scroll" }}>
-            {messages.map((message) => (
-              <Paper key={message.id} w="900px" p={16} shadow="sm">
-                <Group align="flex-start">
-                  {message.role === "system" && (
-                    <ThemeIcon color="blue" size={24} radius="xl">
-                      <IconInfoCircle size="1rem" />
-                    </ThemeIcon>
-                  )}
-                  {message.role === "user" && (
-                    <ThemeIcon color="green" size={24} radius="xl">
-                      <IconUser size="1rem" />
-                    </ThemeIcon>
-                  )}
-                  {message.role === "assistant" && (
-                    <ThemeIcon color="yellow" size={24} radius="xl">
-                      <IconRobot size="1rem" />
-                    </ThemeIcon>
-                  )}
-
-                  <Text
-                    key={message.id}
-                    sx={{
-                      maxWidth: "90%",
-                      overflow: "hidden",
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {message.text}
-                  </Text>
-                </Group>
-              </Paper>
-            ))}
-          </Stack>
-
-          <Group mt="auto" mx="auto" w="100%">
-            <Textarea
-              w="80%"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-            <Button
-              onClick={() =>
-                addToChat.mutate({
-                  id: parseInt(query.id as string),
-                  message: text,
-                })
-              }
-            >
-              SUBMIT
-            </Button>
-          </Group>
-        </>
-      )}
-    </Stack>
-  );
-}
+const useStylesMobile = createStyles((theme) => ({
+  container: {
+    height: "calc(100vh - 70px)",
+    width: "100%",
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gridTemplateRows: "repeat(4, 1fr)",
+  },
+  // menu: {
+  //   gridRowStart: 1,
+  //   gridRowEnd: "span 4",
+  // },
+  chat: {
+    p: 32,
+    overflow: "scroll",
+    gridRowStart: 1,
+    gridRowEnd: "span 3",
+    gridColumnStart: 1,
+    gridColumnEnd: "span 4",
+  },
+  form: {
+    p: 32,
+    gridRowStart: 4,
+    gridRowEnd: "span 1",
+    gridColunStart: 1,
+    gridColumnEnd: "span 4",
+  },
+}));
 
 export function Chat() {
   const { query } = useRouter();
@@ -126,6 +97,12 @@ export function Chat() {
     },
   });
 
+  const addToChat = api.chat.addToChat.useMutation({
+    onSuccess: () => {
+      utils.invalidate().catch(console.error);
+    },
+  });
+
   const currentChat = api.chat.getChatById.useQuery(
     {
       id: parseInt(query.id as string),
@@ -133,43 +110,99 @@ export function Chat() {
     { enabled: !!query.id }
   );
 
+  const { classes: classesDesktop } = useStylesDesktop();
+  const { classes: classesMobile } = useStylesMobile();
+
   return (
+    // <Box pos="relative" w="100vw" m="auto" sx={{ maxWidth: "1200px" }}>
     <>
-      <Group sx={{ height: "100%", overflow: "hidden" }} align="stretch">
-        <Stack w="300px" justify="flex-start" p={32}>
-          <Button onClick={() => createChat.mutate()}>Create New Chat</Button>
+      <Grid>
+        <LoadingOverlay visible={addToChat.isLoading} />
 
-          <List spacing={16} my="2em">
-            {chats.data &&
-              chats.data.map((chat) => (
-                <List.Item
-                  key={chat.id}
-                  icon={
-                    <ThemeIcon color="blue" size={24} radius="xl">
-                      <IconCircleDashed size="1rem" />
-                    </ThemeIcon>
+        <Grid.Col
+          span={9}
+          pb={100}
+          p={32}
+          sx={(theme) => ({
+            overflow: "scroll",
+            backgroundColor:
+              theme.colorScheme === "dark"
+                ? theme.fn.darken(theme.colors.orange[0], 0.8)
+                : theme.colors.orange[0],
+            height: "calc(100vh - 70px)",
+          })}
+        >
+          <CurrentChat />
+        </Grid.Col>
+        <Grid.Col span={3} sx={{ height: "100%", overflow: "hidden" }}>
+          <ChatMenu
+            openEditName={(id: number) => setEditState({ ...editState, id })}
+          />
+        </Grid.Col>
+        <Affix position={{ bottom: 50, right: 200 }}>
+          <ChatForm addToChat={addToChat.mutate} />
+        </Affix>
+      </Grid>
+
+      {false && (
+        <>
+          <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+            <Box className={classesDesktop.container}>
+              <Box className={classesDesktop.menu}>
+                <ChatMenu
+                  openEditName={(id: number) =>
+                    setEditState({ ...editState, id })
                   }
-                >
-                  <Group>
-                    <Link href={`/chat/${chat.id}`} passHref>
-                      <Text>{chat.name}</Text>
-                    </Link>
-                    <Button
-                      onClick={() =>
-                        setEditState({ ...editState, id: chat.id })
-                      }
-                      variant="subtle"
-                    >
-                      Rename
-                    </Button>
-                  </Group>
-                </List.Item>
-              ))}
-          </List>
-        </Stack>
+                />
+              </Box>
+              <Box className={classesDesktop.chat}>
+                <CurrentChat />
+              </Box>
+              <Box className={classesDesktop.form}>
+                <ChatForm addToChat={addToChat.mutate} />
+              </Box>
+            </Box>
+          </MediaQuery>
 
-        <CurrentChat />
-      </Group>
+          <MediaQuery largerThan="md" styles={{ display: "none" }}>
+            <Box className={classesMobile.container}>
+              <Box className={classesMobile.chat}>
+                <CurrentChat />
+              </Box>
+              <Box className={classesMobile.form}>
+                <ChatForm addToChat={addToChat.mutate} />
+              </Box>
+            </Box>
+          </MediaQuery>
+        </>
+      )}
+
+      <Drawer
+        opened={editState.id !== -1}
+        onClose={() => setEditState({ ...editState, id: -1 })}
+        title="Authentication"
+        position="right"
+      >
+        <Group>
+          <TextInput
+            value={editState.name}
+            onChange={(e) =>
+              setEditState({ ...editState, name: e.target.value })
+            }
+          />
+          <Button
+            onClick={() =>
+              renameChat.mutate({
+                id: editState.id,
+                name: editState.name,
+              })
+            }
+          >
+            Rename
+          </Button>
+        </Group>
+      </Drawer>
+
       <Drawer
         opened={editState.id !== -1}
         onClose={() => setEditState({ ...editState, id: -1 })}

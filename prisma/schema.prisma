@@ -10,6 +10,13 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model Setting {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    openaiKey String?
+}
+
 model Chat {
     id        Int       @id @default(autoincrement())
     createdAt DateTime  @default(now())
@@ -25,6 +32,6 @@ model Message {
     role      String
     text      String
     position  Int
-    chat      Chat     @relation(fields: [chatId], references: [id])
+    chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
     chatId    Int
 }

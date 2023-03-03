@@ -1,4 +1,4 @@
-import { openai } from "@/lib/openai";
+import { getOpenaiClient } from "@/lib/openai";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type ChatCompletionRequestMessageRoleEnum } from "openai";
 import { z } from "zod";
@@ -7,6 +7,12 @@ export const chatRouter = createTRPCRouter({
   getAllChats: publicProcedure.query(async ({ ctx }) => {
     const chats = await ctx.prisma.chat.findMany({
       orderBy: { updatedAt: "desc" },
+      include: {
+        messages: {
+          orderBy: { position: "asc" },
+          take: 5,
+        },
+      },
     });
     return chats;
   }),
@@ -58,6 +64,8 @@ export const chatRouter = createTRPCRouter({
       });
 
       const messages = chat.messages;
+
+      const openai = await getOpenaiClient();
 
       const res = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
@@ -124,5 +132,69 @@ export const chatRouter = createTRPCRouter({
       });
 
       return chat;
+    }),
+
+  removeChat: publicProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.chat.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
+
+  seedChatFromTemplate: publicProcedure
+    .input(z.object({ template: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const openai = await getOpenaiClient();
+
+      const res = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            content: "You are a helpful assistant.",
+            role: "system",
+          },
+          {
+            content: input.template,
+            role: "user",
+          },
+        ],
+      });
+
+      const x = res.data?.choices?.[0];
+
+      if (!x?.message?.content) {
+        throw new Error("No response from OpenAI");
+      }
+
+      const {
+        message: { content },
+      } = x;
+
+      return ctx.prisma.chat.create({
+        data: {
+          messages: {
+            create: [
+              {
+                text: "You are a helpful assistant.",
+                position: 0,
+                role: "system",
+              },
+              {
+                text: input.template,
+                position: 1,
+                role: "user",
+              },
+              {
+                text: content,
+                position: 2,
+                role: "assistant",
+              },
+            ],
+          },
+        },
+      });
     }),
 });
