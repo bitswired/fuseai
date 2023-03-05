@@ -17,7 +17,7 @@ const Home: NextPage = () => {
       <Stack m="auto" w="max-content" mt={64} align="center">
         <Title> Welcome To Your Self-Hosted Chat GPT</Title>
 
-        <Link href="/chat" passHref>
+        <Link href="/chats" passHref>
           <Button>Start By Visiting The Chat Page To Create A New Chat</Button>
         </Link>
       </Stack>
