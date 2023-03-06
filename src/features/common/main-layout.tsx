@@ -95,7 +95,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <Group w="100%" h="100%">
           <Link href="/">
             <Group pl={32} align="center" w="max-content">
-              <Box h={72} sx={{ aspectRatio: "1" }} pos="relative">
+              <Box h={50} sx={{ aspectRatio: "1" }} pos="relative">
                 <Image
                   src="/logo.png"
                   alt="logo"
