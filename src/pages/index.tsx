@@ -31,7 +31,7 @@ const Home: NextPage = () => {
         <NavigationCard
           title="Manage settings: before using he app add your OpenAI API key"
           image="https://images.unsplash.com/photo-1610986602538-431d65df4385?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTl8fGNvbmZpZ3VyYXRpb258ZW58MHwwfDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
-          path="/templates/settings"
+          path="/settings"
           cta="Settings"
         />
         <NavigationCard
