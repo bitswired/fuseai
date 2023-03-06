@@ -9,7 +9,14 @@ import { api } from "@/utils/api";
 
 import { SpotActions } from "@/features/common";
 import { MainLayout } from "@/features/common/main-layout";
+import { ModalsProvider } from "@mantine/modals";
+import { Montserrat } from "next/font/google";
 import { useState } from "react";
+
+const mainFont = Montserrat({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+});
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
@@ -33,7 +40,12 @@ const MyApp: AppType = ({ Component, pageProps }) => {
               width: "100%",
               overflowX: "hidden",
             },
+            a: {
+              color: "inherit",
+              textDecoration: "none",
+            },
           }),
+          fontFamily: mainFont.style.fontFamily,
 
           primaryColor: "orange",
 
@@ -43,7 +55,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       >
         <SpotActions>
           <MainLayout>
-            <Component {...pageProps} />
+            <ModalsProvider>
+              <Component {...pageProps} />
+            </ModalsProvider>
           </MainLayout>
         </SpotActions>
       </MantineProvider>

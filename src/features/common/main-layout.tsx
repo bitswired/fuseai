@@ -1,24 +1,25 @@
 import {
   ActionIcon,
+  Box,
   Button,
   createStyles,
   Grid,
   Group,
+  Paper,
   Stack,
   Text,
-  ThemeIcon,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import {
-  IconBrain,
   IconMessageCircle,
   IconMoonStars,
   IconSettings,
   IconSun,
   IconTemplate,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -29,8 +30,6 @@ interface MenuItemProps {
 }
 function MenuItem({ icon, text, path }: MenuItemProps) {
   const { pathname } = useRouter();
-
-  console.log(path, pathname);
 
   return (
     <Link href={path}>
@@ -83,20 +82,33 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   const { classes } = useStyles();
   return (
-    <Grid>
-      <Grid.Col className={classes.header} span={12}>
-        <Group>
-          <Group pl={32} align="center" w="max-content" h="100%">
-            <ThemeIcon
-              variant="gradient"
-              gradient={{ from: "orange", to: "cyan" }}
-            >
-              <IconBrain size={64} />
-            </ThemeIcon>
-            <Text color="orange" weight="bold" size="2em">
-              AI Chat
-            </Text>
-          </Group>
+    <>
+      <Paper
+        h="70px"
+        pos="fixed"
+        top={0}
+        left={0}
+        w="100%"
+        shadow="xs"
+        sx={{ zIndex: 100 }}
+      >
+        <Group w="100%" h="100%">
+          <Link href="/">
+            <Group pl={32} align="center" w="max-content">
+              <Box h={72} sx={{ aspectRatio: "1" }} pos="relative">
+                <Image
+                  src="/logo.png"
+                  alt="logo"
+                  fill
+                  style={{ objectFit: "contain" }}
+                />
+              </Box>
+
+              <Text color="orange" weight="bold" size="2em">
+                AI Chat
+              </Text>
+            </Group>
+          </Link>
 
           <ActionIcon
             variant="filled"
@@ -109,13 +121,16 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             {dark ? <IconSun size="1.1rem" /> : <IconMoonStars size="1.1rem" />}
           </ActionIcon>
         </Group>
-      </Grid.Col>
-      <Grid.Col className={classes.menu} span={2}>
-        <Menu />
-      </Grid.Col>
-      <Grid.Col className={classes.main} span={10}>
-        <main id="main">{children}</main>
-      </Grid.Col>
-    </Grid>
+      </Paper>
+
+      <Grid mt="70px">
+        <Grid.Col className={classes.menu} span={2}>
+          <Menu />
+        </Grid.Col>
+        <Grid.Col className={classes.main} span={10}>
+          <main id="main">{children}</main>
+        </Grid.Col>
+      </Grid>
+    </>
   );
 }

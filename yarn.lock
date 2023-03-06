@@ -332,6 +332,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/modals@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@mantine/modals@npm:6.0.0"
+  dependencies:
+    "@mantine/utils": 6.0.0
+  peerDependencies:
+    "@mantine/core": 6.0.0
+    "@mantine/hooks": 6.0.0
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 23e0348821294eceab8e70fa6eb46902b6f8cb3acddd7ec6354a3636a878100a0bdcc36eb38d86e315ca4a148bc77afacb4206bcbee5b77639d9f0785d4f5260
+  languageName: node
+  linkType: hard
+
 "@mantine/next@npm:^6.0.0":
   version: 6.0.0
   resolution: "@mantine/next@npm:6.0.0"
@@ -949,6 +963,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/string-template@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@types/string-template@npm:1.0.2"
+  checksum: 25b07ab4c7062dfd57c6a100a9eaac4cca9c836a1fff85351e143cf1696b311c322ca0f6f7a2bad834deeedfd0cb7ca96c180c36983092864169151e32abc15f
+  languageName: node
+  linkType: hard
+
 "@types/unist@npm:*, @types/unist@npm:^2.0.0":
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
@@ -1385,6 +1406,7 @@ __metadata:
     "@mantine/core": ^6.0.0
     "@mantine/form": ^6.0.0
     "@mantine/hooks": ^6.0.0
+    "@mantine/modals": ^6.0.0
     "@mantine/next": ^6.0.0
     "@mantine/prism": ^6.0.0
     "@mantine/spotlight": ^6.0.0
@@ -1399,6 +1421,7 @@ __metadata:
     "@types/node": ^18.14.0
     "@types/react": ^18.0.28
     "@types/react-dom": ^18.0.11
+    "@types/string-template": ^1.0.2
     "@typescript-eslint/eslint-plugin": ^5.53.0
     "@typescript-eslint/parser": ^5.53.0
     eslint: ^8.34.0
@@ -1411,6 +1434,7 @@ __metadata:
     react-dom: 18.2.0
     react-markdown: ^8.0.5
     remark-gfm: ^3.0.1
+    string-template: ^1.0.0
     superjson: 1.9.1
     typescript: ^4.9.5
     zod: ^3.20.6
@@ -4562,6 +4586,13 @@ __metadata:
   dependencies:
     internal-slot: ^1.0.4
   checksum: d04173690b2efa40e24ab70e5e51a3ff31d56d699550cfad084104ab3381390daccb36652b25755e420245f3b0737de66c1879eaa2a8d4fc0a78f9bf892fcb42
+  languageName: node
+  linkType: hard
+
+"string-template@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "string-template@npm:1.0.0"
+  checksum: 15b0e8616ff25f3ddcd42e4a58a6833cc7be81029f97afc7b8f8d2e7c4d482a136e67399d207b7d2c31080e7a88266c670131a59e50ebc482bfeddb06b3a4215
   languageName: node
   linkType: hard
 

@@ -5,6 +5,7 @@ import {
 import { type AppRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
 import {
+  ActionIcon,
   Badge,
   Box,
   Button,
@@ -17,15 +18,15 @@ import {
   Text,
   Textarea,
   TextInput,
+  ThemeIcon,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons-react";
+import { type Template } from "@prisma/client";
+import { IconSearch, IconTrash } from "@tabler/icons-react";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import type FuseType from "fuse.js";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -101,7 +102,7 @@ type SeedInput = RouterInput["chat"]["seedChatFromTemplate"];
 type SmartSeedInput = RouterInput["chat"]["smartSeedChatFromTemplate"];
 
 interface PromptsProps {
-  templates: GetPromptsFromRepoOutput;
+  templates: Template[];
   seed: (input: SeedInput) => void;
   smartSeed: (input: SmartSeedInput) => void;
 }
@@ -111,15 +112,19 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
   const form = useForm({
     initialValues: {},
   });
+  const context = api.useContext();
+  const removeTemplate = api.templates.removeTemplate.useMutation({
+    onSuccess: () => {
+      context.invalidate().catch(console.error);
+    },
+  });
 
   useEffect(() => {
     if (smartId) {
       form.reset();
-      const xx = templates?.[smartId]?.prompt;
-      if (!xx) throw new Error("Invalid smart template");
-      const x = getTemplateVariablesAsObject(xx);
-      if (!x) throw new Error("Invalid smart template");
-      form.setValues(x);
+      const y = templates?.[smartId - 1]?.prompt;
+      const x = getTemplateVariablesAsObject(y || "");
+      x && form.setValues(x);
     }
   }, [smartId]);
 
@@ -131,9 +136,20 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
                   sdfs
                 </Card.Section> */}
 
+          <ActionIcon
+            top={5}
+            right={5}
+            pos="absolute"
+            onClick={() => removeTemplate.mutate({ id: template.id })}
+          >
+            <ThemeIcon color="red" variant="light">
+              <IconTrash size={12} />
+            </ThemeIcon>
+          </ActionIcon>
+
           <Stack h="7em" spacing={3}>
             {getTemplateVariablesRegex(template.prompt) && (
-              <Badge color="cyan" variant="outline" w="max-content">
+              <Badge color="cyan" variant="filled" w="max-content">
                 Smart Template
               </Badge>
             )}
@@ -153,17 +169,13 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
             radius="md"
             onClick={() => {
               if (getTemplateVariablesRegex(template.prompt)) {
-                setSmartId(i);
-                // smartSeed({
-                //   template: template.prompt,
-                //   variables: { x: "lsdkjnf" },
-                // });
+                setSmartId(i + 1);
               } else {
                 seed({ template: template.prompt });
               }
             }}
           >
-            Start from this template
+            Start From This Template
           </Button>
         </Card>
       ))}
@@ -174,7 +186,7 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
           <form
             onSubmit={form.onSubmit((v) => {
               smartSeed({
-                template: templates?.[smartId]?.prompt || "",
+                template: templates?.[smartId - 1]?.prompt || "",
                 variables: v,
               });
             })}
@@ -182,14 +194,16 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
             <Stack>
               <Text>{templates[smartId]?.prompt}</Text>
               {getTemplateVariablesRegex(
-                templates?.[smartId]?.prompt || ""
-              )?.map((v) => (
-                <TextInput
-                  key={v}
-                  placeholder={v}
-                  {...form.getInputProps(v || "")}
-                />
-              ))}
+                templates?.[smartId - 1]?.prompt || ""
+              )?.map((v) =>
+                v ? (
+                  <TextInput
+                    key={v}
+                    placeholder={v}
+                    {...form.getInputProps(v)}
+                  />
+                ) : null
+              )}
               <Button type="submit">Submit</Button>
             </Stack>
           </form>
@@ -199,9 +213,9 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
   );
 }
 
-export function TemplatesPage() {
-  const templates = api.templates.getTemplatesFromRepo.useQuery();
-  const [fuse, setFuse] = useState<FuseType<GetPromptsFromRepoOutput[0]>>();
+export default function ImportTemplatesPage() {
+  const templates = api.templates.getTemplates.useQuery();
+  const [fuse, setFuse] = useState<FuseType<Template>>();
 
   const [filterQuery, setFilterQuery] = useState("");
   const router = useRouter();
@@ -232,94 +246,26 @@ export function TemplatesPage() {
   }, [templates.data]);
 
   return (
-    <Box pos="relative" w="100%">
-      <LoadingOverlay visible={seed.isLoading} />
-
-      <Search filterQuery={filterQuery} setFilterQuery={setFilterQuery} />
-
-      {visiblePrompts && templates.data && (
-        <Prompts
-          templates={
-            visiblePrompts.length > 0 ? visiblePrompts : templates.data
-          }
-          seed={seed.mutate}
-          smartSeed={smartSeed.mutate}
-        />
-      )}
-    </Box>
-  );
-}
-
-export default function TemplatesHomePage() {
-  return (
     <>
-      <Title m="auto" w="max-content">
+      <Title m="auto" w="max-content" mb={32}>
         Manage Templates
       </Title>
-      <SimpleGrid m="auto" cols={2} mt={32} p={64}>
-        <TemplateCategoyCard
-          title="Your Templates"
-          image="https://images.unsplash.com/photo-1530435460869-d13625c69bbf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dGVtcGxhdGVzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
-          path="/templates/manage"
-          description="Create, delete and generate new chats from your templates."
-          cta="Manage Templates"
-        />
 
-        <TemplateCategoyCard
-          title="Import Templates From Other Sources"
-          image="https://images.unsplash.com/photo-1667984390527-850f63192709?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDV8fGRpc3RyaWJ1dGVkJTIwY29tcHV0aW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
-          path="/templates/import"
-          description="Import templates from other sources to use them in your chats."
-          cta="Import Templates"
-        />
-      </SimpleGrid>
+      <Box pos="relative" w="100%">
+        <LoadingOverlay visible={seed.isLoading} />
+
+        <Search filterQuery={filterQuery} setFilterQuery={setFilterQuery} />
+
+        {visiblePrompts && templates.data && (
+          <Prompts
+            templates={
+              visiblePrompts.length > 0 ? visiblePrompts : templates.data
+            }
+            seed={seed.mutate}
+            smartSeed={smartSeed.mutate}
+          />
+        )}
+      </Box>
     </>
-  );
-}
-interface TemplateCategoyCardProps {
-  title: string;
-  path: string;
-  image: string;
-  description: string;
-  cta: string;
-}
-
-function TemplateCategoyCard({
-  title,
-  path,
-  image,
-  description,
-  cta,
-}: TemplateCategoyCardProps) {
-  return (
-    <Card
-      m="auto"
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
-      sx={{ maxWidth: "500px" }}
-    >
-      <Card.Section pos="relative" h={200}>
-        <Image src={image} fill alt={title} style={{ objectFit: "cover" }} />
-      </Card.Section>
-
-      <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>{title}</Text>
-        {/* <Badge color="pink" variant="light">
-          On Sale
-        </Badge> */}
-      </Group>
-
-      <Text size="sm" color="dimmed">
-        {description}
-      </Text>
-
-      <Link href={path}>
-        <Button variant="light" fullWidth mt="md" radius="md">
-          {cta}
-        </Button>
-      </Link>
-    </Card>
   );
 }

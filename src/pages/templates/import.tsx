@@ -1,7 +1,4 @@
-import {
-  getTemplateVariablesAsObject,
-  getTemplateVariablesRegex,
-} from "@/features/template";
+import { getTemplateVariablesRegex } from "@/features/template";
 import { type AppRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
 import {
@@ -24,8 +21,6 @@ import { useToggle } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons-react";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import type FuseType from "fuse.js";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -107,22 +102,12 @@ interface PromptsProps {
 }
 
 function Prompts({ templates, seed, smartSeed }: PromptsProps) {
-  const [smartId, setSmartId] = useState<number>();
-  const form = useForm({
-    initialValues: {},
+  const context = api.useContext();
+  const createTemplate = api.templates.createTemplate.useMutation({
+    onSuccess: () => {
+      context.invalidate().catch(console.error);
+    },
   });
-
-  useEffect(() => {
-    if (smartId) {
-      form.reset();
-      const xx = templates?.[smartId]?.prompt;
-      if (!xx) throw new Error("Invalid smart template");
-      const x = getTemplateVariablesAsObject(xx);
-      if (!x) throw new Error("Invalid smart template");
-      form.setValues(x);
-    }
-  }, [smartId]);
-
   return (
     <SimpleGrid cols={4} p={32}>
       {templates.map((template, i) => (
@@ -152,54 +137,18 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
             mt="md"
             radius="md"
             onClick={() => {
-              if (getTemplateVariablesRegex(template.prompt)) {
-                setSmartId(i);
-                // smartSeed({
-                //   template: template.prompt,
-                //   variables: { x: "lsdkjnf" },
-                // });
-              } else {
-                seed({ template: template.prompt });
-              }
+              createTemplate.mutate(template);
             }}
           >
-            Start from this template
+            Import This Template
           </Button>
         </Card>
       ))}
-      <Modal opened={!!smartId} onClose={() => setSmartId(undefined)}>
-        <Text weight="bold">You opened a smart template</Text>
-
-        {smartId && (
-          <form
-            onSubmit={form.onSubmit((v) => {
-              smartSeed({
-                template: templates?.[smartId]?.prompt || "",
-                variables: v,
-              });
-            })}
-          >
-            <Stack>
-              <Text>{templates[smartId]?.prompt}</Text>
-              {getTemplateVariablesRegex(
-                templates?.[smartId]?.prompt || ""
-              )?.map((v) => (
-                <TextInput
-                  key={v}
-                  placeholder={v}
-                  {...form.getInputProps(v || "")}
-                />
-              ))}
-              <Button type="submit">Submit</Button>
-            </Stack>
-          </form>
-        )}
-      </Modal>
     </SimpleGrid>
   );
 }
 
-export function TemplatesPage() {
+export default function ImportTemplatesPage() {
   const templates = api.templates.getTemplatesFromRepo.useQuery();
   const [fuse, setFuse] = useState<FuseType<GetPromptsFromRepoOutput[0]>>();
 
@@ -232,94 +181,25 @@ export function TemplatesPage() {
   }, [templates.data]);
 
   return (
-    <Box pos="relative" w="100%">
-      <LoadingOverlay visible={seed.isLoading} />
-
-      <Search filterQuery={filterQuery} setFilterQuery={setFilterQuery} />
-
-      {visiblePrompts && templates.data && (
-        <Prompts
-          templates={
-            visiblePrompts.length > 0 ? visiblePrompts : templates.data
-          }
-          seed={seed.mutate}
-          smartSeed={smartSeed.mutate}
-        />
-      )}
-    </Box>
-  );
-}
-
-export default function TemplatesHomePage() {
-  return (
     <>
-      <Title m="auto" w="max-content">
-        Manage Templates
+      <Title m="auto" w="max-content" mb={32}>
+        Import Templates
       </Title>
-      <SimpleGrid m="auto" cols={2} mt={32} p={64}>
-        <TemplateCategoyCard
-          title="Your Templates"
-          image="https://images.unsplash.com/photo-1530435460869-d13625c69bbf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dGVtcGxhdGVzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
-          path="/templates/manage"
-          description="Create, delete and generate new chats from your templates."
-          cta="Manage Templates"
-        />
+      <Box pos="relative" w="100%">
+        <LoadingOverlay visible={seed.isLoading} />
 
-        <TemplateCategoyCard
-          title="Import Templates From Other Sources"
-          image="https://images.unsplash.com/photo-1667984390527-850f63192709?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDV8fGRpc3RyaWJ1dGVkJTIwY29tcHV0aW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60"
-          path="/templates/import"
-          description="Import templates from other sources to use them in your chats."
-          cta="Import Templates"
-        />
-      </SimpleGrid>
+        <Search filterQuery={filterQuery} setFilterQuery={setFilterQuery} />
+
+        {visiblePrompts && templates.data && (
+          <Prompts
+            templates={
+              visiblePrompts.length > 0 ? visiblePrompts : templates.data
+            }
+            seed={seed.mutate}
+            smartSeed={smartSeed.mutate}
+          />
+        )}
+      </Box>
     </>
-  );
-}
-interface TemplateCategoyCardProps {
-  title: string;
-  path: string;
-  image: string;
-  description: string;
-  cta: string;
-}
-
-function TemplateCategoyCard({
-  title,
-  path,
-  image,
-  description,
-  cta,
-}: TemplateCategoyCardProps) {
-  return (
-    <Card
-      m="auto"
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
-      sx={{ maxWidth: "500px" }}
-    >
-      <Card.Section pos="relative" h={200}>
-        <Image src={image} fill alt={title} style={{ objectFit: "cover" }} />
-      </Card.Section>
-
-      <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>{title}</Text>
-        {/* <Badge color="pink" variant="light">
-          On Sale
-        </Badge> */}
-      </Group>
-
-      <Text size="sm" color="dimmed">
-        {description}
-      </Text>
-
-      <Link href={path}>
-        <Button variant="light" fullWidth mt="md" radius="md">
-          {cta}
-        </Button>
-      </Link>
-    </Card>
   );
 }

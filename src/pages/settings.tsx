@@ -20,7 +20,7 @@ export default function Settings() {
     },
   });
 
-  const onSubmit = useEffect(() => {
+  useEffect(() => {
     if (settings.data) {
       const x = settings.data;
       form.setValues({ openaiKey: settings.data.openaiKey || "" });

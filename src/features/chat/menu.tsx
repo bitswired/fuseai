@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Button,
   Group,
+  Paper,
   Stack,
   Text,
   TextInput,
@@ -50,35 +51,33 @@ export function ChatMenu({ openEditName }: ChatMenuProps) {
               x.name.toLowerCase().includes(filterQuery.toLowerCase())
             )
             .map((chat) => (
-              <Group
-                key={chat.id}
-                sx={{ border: "1px solid black", borderRadius: "10px" }}
-                p={16}
-              >
-                <ActionIcon
-                  size="sx"
-                  onClick={() => removeChat.mutate({ id: chat.id })}
-                >
-                  <ThemeIcon color="red" variant="light">
-                    <IconTrash size={12} />
-                  </ThemeIcon>
-                </ActionIcon>
+              <Paper key={chat.id} shadow="sm" sx={{ borderRadius: "10px" }}>
+                <Group p={16}>
+                  <ActionIcon
+                    size="sx"
+                    onClick={() => removeChat.mutate({ id: chat.id })}
+                  >
+                    <ThemeIcon color="red" variant="light">
+                      <IconTrash size={12} />
+                    </ThemeIcon>
+                  </ActionIcon>
 
-                <Link href={`/chats/${chat.id}`} passHref>
-                  <Text truncate sx={{ maxWidth: "10ch" }}>
-                    {chat.name}
-                  </Text>
-                </Link>
+                  <Link href={`/chats/${chat.id}`} passHref>
+                    <Text truncate sx={{ maxWidth: "10ch" }}>
+                      {chat.name}
+                    </Text>
+                  </Link>
 
-                <Button
-                  size="xs"
-                  ml="auto"
-                  onClick={() => openEditName(chat.id)}
-                  variant="subtle"
-                >
-                  Rename
-                </Button>
-              </Group>
+                  <Button
+                    size="xs"
+                    ml="auto"
+                    onClick={() => openEditName(chat.id)}
+                    variant="subtle"
+                  >
+                    Rename
+                  </Button>
+                </Group>
+              </Paper>
             ))}
       </Stack>
     </Stack>

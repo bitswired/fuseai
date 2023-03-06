@@ -15,6 +15,7 @@
     "@mantine/core": "^6.0.0",
     "@mantine/form": "^6.0.0",
     "@mantine/hooks": "^6.0.0",
+    "@mantine/modals": "^6.0.0",
     "@mantine/next": "^6.0.0",
     "@mantine/prism": "^6.0.0",
     "@mantine/spotlight": "^6.0.0",
@@ -32,6 +33,7 @@
     "react-dom": "18.2.0",
     "react-markdown": "^8.0.5",
     "remark-gfm": "^3.0.1",
+    "string-template": "^1.0.0",
     "superjson": "1.9.1",
     "zod": "^3.20.6",
     "zustand": "^4.3.5"
@@ -41,6 +43,7 @@
     "@types/node": "^18.14.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/string-template": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "eslint": "^8.34.0",

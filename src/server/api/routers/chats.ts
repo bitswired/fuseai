@@ -1,5 +1,7 @@
+import { replaceTemplate } from "@/features/template";
 import { getOpenaiClient } from "@/lib/openai";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { type PrismaClient } from "@prisma/client";
 import { type ChatCompletionRequestMessageRoleEnum } from "openai";
 import { z } from "zod";
 
@@ -147,54 +149,68 @@ export const chatRouter = createTRPCRouter({
   seedChatFromTemplate: publicProcedure
     .input(z.object({ template: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const openai = await getOpenaiClient();
+      return await newFunction(input, ctx.prisma);
+    }),
 
-      const res = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [
+  smartSeedChatFromTemplate: publicProcedure
+    .input(
+      z.object({ template: z.string(), variables: z.object({}).passthrough() })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const a = replaceTemplate(input.template, input.variables);
+
+      return newFunction({ template: a }, ctx.prisma);
+    }),
+});
+
+async function newFunction(input: { template: string }, prisma: PrismaClient) {
+  const openai = await getOpenaiClient();
+
+  const res = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        content: "You are a helpful assistant.",
+        role: "system",
+      },
+      {
+        content: input.template,
+        role: "user",
+      },
+    ],
+  });
+
+  const x = res.data?.choices?.[0];
+
+  if (!x?.message?.content) {
+    throw new Error("No response from OpenAI");
+  }
+
+  const {
+    message: { content },
+  } = x;
+
+  return prisma.chat.create({
+    data: {
+      messages: {
+        create: [
           {
-            content: "You are a helpful assistant.",
+            text: "You are a helpful assistant.",
+            position: 0,
             role: "system",
           },
           {
-            content: input.template,
+            text: input.template,
+            position: 1,
             role: "user",
           },
-        ],
-      });
-
-      const x = res.data?.choices?.[0];
-
-      if (!x?.message?.content) {
-        throw new Error("No response from OpenAI");
-      }
-
-      const {
-        message: { content },
-      } = x;
-
-      return ctx.prisma.chat.create({
-        data: {
-          messages: {
-            create: [
-              {
-                text: "You are a helpful assistant.",
-                position: 0,
-                role: "system",
-              },
-              {
-                text: input.template,
-                position: 1,
-                role: "user",
-              },
-              {
-                text: content,
-                position: 2,
-                role: "assistant",
-              },
-            ],
+          {
+            text: content,
+            position: 2,
+            role: "assistant",
           },
-        },
-      });
-    }),
-});
+        ],
+      },
+    },
+  });
+}

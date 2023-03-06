@@ -35,3 +35,11 @@ model Message {
     chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
     chatId    Int
 }
+
+model Template {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    prompt    String
+}

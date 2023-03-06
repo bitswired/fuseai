@@ -1,9 +1,13 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
+const TemplateSchema = z.array(
+  z.object({ name: z.string(), prompt: z.string() })
+);
+
 export const templateRouter = createTRPCRouter({
   getTemplatesFromRepo: publicProcedure
-    .output(z.array(z.object({ act: z.string(), prompt: z.string() })))
+    .output(TemplateSchema)
     .query(async ({ ctx }) => {
       const res = await fetch(
         "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv"
@@ -20,18 +24,48 @@ export const templateRouter = createTRPCRouter({
 
       const data: any = lines.slice(1).map((line) => {
         const values = line.split(",");
-        return headers.reduce<Record<string, string>>((obj, header, i) => {
-          const h = header.replaceAll('"', "");
-          const val = values[i]?.replaceAll('"', "");
-          if (!val) {
-            throw new Error("No value found");
-          }
-          obj[h] = val;
-          return obj;
-        }, {});
+        const head = headers.reduce<Record<string, string>>(
+          (obj, header, i) => {
+            const h = header.replaceAll('"', "");
+            const val = values[i]?.replaceAll('"', "");
+            if (!val) {
+              throw new Error("No value found");
+            }
+            obj[h] = val;
+            return obj;
+          },
+          {}
+        );
+        head.name = head.act!;
+        return head;
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return data;
+      return TemplateSchema.parse(data);
+    }),
+
+  getTemplates: publicProcedure.query(async ({ ctx, input }) => {
+    return ctx.prisma.template.findMany({});
+  }),
+
+  createTemplate: publicProcedure
+    .input(z.object({ name: z.string(), prompt: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const res = await ctx.prisma.template.create({
+        data: {
+          name: input.name,
+          prompt: input.prompt,
+        },
+      });
+      return res;
+    }),
+
+  removeTemplate: publicProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.template.delete({
+        where: {
+          id: input.id,
+        },
+      });
     }),
 });

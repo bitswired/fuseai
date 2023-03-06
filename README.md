@@ -18,14 +18,15 @@ https://user-images.githubusercontent.com/19983429/222851571-a7f56e46-30fb-4940-
 
 ```
 DATABASE_URL="file:./db.sqlite"
-OPENAI_API_KEY=<YOUR OPENAI API KEY>
 ```
 
 2. Run `yarn`
 3. Run `yarn prisma migrate deploy`
 4. Run `yarn build`
 5. Run `yarn start`
-6. Visi localhost:3000
+6. Visit localhost:3000/settings
+7. Add your OpenAI API Key
+8. Enjoy youtr self-hosted ChatGPT
 
 ## Roadmap 🚀
 
