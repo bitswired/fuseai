@@ -26,7 +26,7 @@ DATABASE_URL="file:./db.sqlite"
 5. Run `yarn start`
 6. Visit localhost:3000/settings
 7. Add your OpenAI API Key
-8. Enjoy youtr self-hosted ChatGPT
+8. Enjoy your self-hosted ChatGPT
 
 ## Roadmap 🚀
 
