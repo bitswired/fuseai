@@ -1,6 +1,6 @@
 # Open Source, Self-Hosted Chat GPT APP
 
-https://user-images.githubusercontent.com/19983429/222851571-a7f56e46-30fb-4940-8463-7ee8092f14c9.mp4
+https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-8337-48721f1f4207.mp4
 
 ## Stack
 
