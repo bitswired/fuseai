@@ -1,0 +1,22 @@
+name: Docker Nightly Production
+
+on:
+  push:
+    branches:
+      - nightly
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build-release:
+    name: Build Nightly Release
+    uses: ./.github/workflows/nightly-builder.yml
+    with:
+      tag: nightly
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+

@@ -1,0 +1,16 @@
+name: Docker Build Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+
+  build-release:
+    name: Build Latest Release
+    uses: ./.github/workflows/latest-builder.yml
+    with:
+      tag: ${{ github.event.release.tag_name }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
