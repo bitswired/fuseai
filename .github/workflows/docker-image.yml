@@ -29,5 +29,5 @@ jobs:
         context: .
         push: true
         tags: |
-          ai-chat-app:latest
-          ai-chat-app:1.0.${{ github.run_number }}      
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:latest
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:1.0.${{ github.run_number }}      
