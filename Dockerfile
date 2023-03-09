@@ -6,7 +6,11 @@ FROM node:lts-alpine as build
 WORKDIR /src
 COPY . .
 COPY ./.env.example ./.env
-RUN yarn && yarn prisma migrate deploy && yarn build && npm prune --omit=dev --omit=optional
+RUN yarn 
+RUN yarn prisma migrate deploy \
+  && yarn build \
+  && npm prune --omit=dev --omit=optional \
+  && npm cache clean --force
 
 FROM base as final
 WORKDIR /app
