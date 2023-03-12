@@ -47,11 +47,22 @@ export const templateRouter = createTRPCRouter({
     return ctx.prisma.template.findMany({});
   }),
 
-  createTemplate: publicProcedure
-    .input(z.object({ name: z.string(), prompt: z.string() }))
+  upsertTemplate: publicProcedure
+    .input(
+      z.object({
+        id: z.number().optional(),
+        name: z.string(),
+        prompt: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.prisma.template.create({
-        data: {
+      const res = await ctx.prisma.template.upsert({
+        where: { id: input.id ?? -1 },
+        create: {
+          name: input.name,
+          prompt: input.prompt,
+        },
+        update: {
           name: input.name,
           prompt: input.prompt,
         },

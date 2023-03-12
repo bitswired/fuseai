@@ -24,7 +24,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { type Template } from "@prisma/client";
-import { IconSearch, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconSearch, IconTrash } from "@tabler/icons-react";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import type FuseType from "fuse.js";
 import { useRouter } from "next/router";
@@ -36,7 +36,7 @@ interface SearchProps {
 }
 function Search({ filterQuery, setFilterQuery }: SearchProps) {
   const context = api.useContext();
-  const createTemplate = api.templates.createTemplate.useMutation({
+  const createTemplate = api.templates.upsertTemplate.useMutation({
     onSuccess: () => {
       form.reset();
       toggleCreateOpened();
@@ -112,6 +112,12 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
   const form = useForm({
     initialValues: {},
   });
+  const formEdit = useForm({
+    initialValues: {
+      name: "",
+      prompt: "",
+    },
+  });
   const context = api.useContext();
   const removeTemplate = api.templates.removeTemplate.useMutation({
     onSuccess: () => {
@@ -128,6 +134,16 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
     }
   }, [smartId]);
 
+  const [isEditing, toggleIsEditing] = useToggle();
+
+  const upsertTemplate = api.templates.upsertTemplate.useMutation({
+    onSuccess: () => {
+      form.reset();
+      toggleIsEditing();
+      context.invalidate().catch(console.error);
+    },
+  });
+
   return (
     <SimpleGrid cols={4} p={32}>
       {templates.map((template, i) => (
@@ -135,6 +151,20 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
           {/* <Card.Section component="a" href="https://mantine.dev/">
                   sdfs
                 </Card.Section> */}
+
+          <ActionIcon
+            top={5}
+            right={40}
+            pos="absolute"
+            onClick={() => {
+              formEdit.setValues({ ...template });
+              toggleIsEditing();
+            }}
+          >
+            <ThemeIcon color="orange" variant="light">
+              <IconEdit size={12} />
+            </ThemeIcon>
+          </ActionIcon>
 
           <ActionIcon
             top={5}
@@ -208,6 +238,33 @@ function Prompts({ templates, seed, smartSeed }: PromptsProps) {
             </Stack>
           </form>
         )}
+      </Modal>
+      <Modal opened={isEditing} onClose={toggleIsEditing}>
+        <LoadingOverlay visible={upsertTemplate.isLoading} />
+        <Stack>
+          <Text weight="bold">
+            Write a template. You can use {} notation to make smart templates.
+          </Text>
+
+          <form onSubmit={formEdit.onSubmit((v) => upsertTemplate.mutate(v))}>
+            <Stack>
+              <TextInput
+                placeholder="Name ..."
+                {...formEdit.getInputProps("name")}
+              />
+              <Textarea
+                placeholder="Template ..."
+                maxRows={20}
+                autosize
+                minRows={5}
+                {...formEdit.getInputProps("prompt")}
+              />
+              <Button type="submit" fullWidth>
+                Update Template
+              </Button>
+            </Stack>
+          </form>
+        </Stack>
       </Modal>
     </SimpleGrid>
   );
