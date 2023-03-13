@@ -1,5 +1,6 @@
 import { chatRouter } from "@/server/api/routers/chats";
 import { createTRPCRouter } from "@/server/api/trpc";
+import { accountsRouter } from "./routers/accounts";
 import { settingsRouter } from "./routers/settings";
 import { templateRouter } from "./routers/templates";
 
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   chat: chatRouter,
   settings: settingsRouter,
   templates: templateRouter,
+  accounts: accountsRouter,
 });
 
 // export type definition of API

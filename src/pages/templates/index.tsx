@@ -35,7 +35,7 @@ interface SearchProps {
 }
 function Search({ filterQuery, setFilterQuery }: SearchProps) {
   const context = api.useContext();
-  const createTemplate = api.templates.createTemplate.useMutation({
+  const createTemplate = api.templates.upsertTemplate.useMutation({
     onSuccess: () => {
       form.reset();
       toggleCreateOpened();

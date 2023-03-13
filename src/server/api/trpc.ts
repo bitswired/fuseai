@@ -42,8 +42,13 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
+  const { req, res } = _opts;
+  const session = await getServerAuthSession({ req, res });
+
+  const { prisma } = createInnerTRPCContext({});
+
+  return { prisma, session };
 };
 
 /**
@@ -51,7 +56,8 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  *
  * This is where the tRPC API is initialized, connecting the context and transformer.
  */
-import { initTRPC } from "@trpc/server";
+import { getServerAuthSession } from "@/features/auth";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -83,3 +89,28 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user || !ctx.session.user.email) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+export const protectedProcedure = t.procedure.use(isAuthed);
+
+const isAdmin = isAuthed.unstable_pipe(({ ctx, next }) => {
+  if (ctx.session.user.role === "user") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next();
+});
+
+export const protectedAdminProcedure = t.procedure.use(isAdmin);
