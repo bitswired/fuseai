@@ -16,6 +16,17 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 
 ## How to run
 
+### Docker
+1. Clone the repository
+2. `docker build -t ai-chat-app .`
+3. `docker run -p 3000:3000 ai-chat-app`
+
+In order to persist data, you can use a volume to store the Sqlite database like this:
+
+`docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app`
+
+### Local
+
 1. Clone the repository
 2. Create a `.env` file containing 2 entries:
 
