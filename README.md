@@ -16,6 +16,7 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 
 ## How to run
 
+<<<<<<< HEAD
 ### Docker Hub (Simplest)
 1. `docker pull docker.io/bitswiredpods/ai-chat-app`
 2. `docker run -p 3000:3000 docker.io/bitswiredpods/ai-chat-app`
@@ -25,6 +26,9 @@ In order to persist data, you can use a volume to store the Sqlite database like
 `docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app docker.io/bitswired/ai-chat-app`
 
 ### Docker Local
+=======
+### Docker
+>>>>>>> f5a66ba (Dockerize the app (#14))
 1. Clone the repository
 2. `docker build -t ai-chat-app .`
 3. `docker run -p 3000:3000 ai-chat-app`
