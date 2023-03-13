@@ -10,4 +10,4 @@ export default withAuth({
   },
 });
 
-export const config = { matcher: ["/((?!auth|).*)"] };
+export const config = { matcher: ["/", "/((?!auth).*)"] };

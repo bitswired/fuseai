@@ -133,6 +133,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   const { classes } = useStyles();
 
+  const { data: sessionData } = useSession();
+
   const { status, data } = useSession({
     required: true,
     onUnauthenticated() {
@@ -176,9 +178,15 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           <Group ml="auto">
             <Text>{data?.user?.email}</Text>
 
-            <Button size="xs" variant="outline" onClick={() => handleSignOut()}>
-              Sign Out
-            </Button>
+            {sessionData?.user && (
+              <Button
+                size="xs"
+                variant="outline"
+                onClick={() => handleSignOut()}
+              >
+                Sign Out
+              </Button>
+            )}
 
             <ActionIcon
               variant="filled"
