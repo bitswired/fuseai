@@ -54,7 +54,6 @@ export const chatRouter = createTRPCRouter({
       },
     });
   }),
-
   addToChat: protectedProcedure
     .input(z.object({ id: z.number().int(), message: z.string() }))
     .mutation(async ({ ctx, input }) => {
