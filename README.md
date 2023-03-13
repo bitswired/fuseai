@@ -2,6 +2,8 @@
 
 https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-8337-48721f1f4207.mp4
 
+[![Join our Discord server!](https://invidget.switchblade.xyz/RwFPjfTZdT)](http://discord.gg/RwFPjfTZdT)
+
 ## Stack
 
 - Prisma,
@@ -10,9 +12,6 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 - TypeScript
 - Sqlite
 - Mantine (React comoponent library)
-
-
-[![Join our Discord server!](https://invidget.switchblade.xyz/RwFPjfTZdT)](http://discord.gg/RwFPjfTZdT)
 
 
 ## How to run
