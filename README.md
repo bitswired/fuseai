@@ -16,7 +16,7 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 
 ## How to run
 
-### Docker Hub
+### Docker Hub (Simplest)
 1. `docker pull docker.io/bitswiredpods/ai-chat-app`
 2. `docker run -p 3000:3000 docker.io/bitswiredpods/ai-chat-app`
 
