@@ -22,7 +22,7 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 
 In order to persist data, you can use a volume to store the Sqlite database like this:
 
-`docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app docker.io/bitswiredpods/ai-chat-app`
+`docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app docker.io/bitswired/ai-chat-app`
 
 ### Docker Local
 1. Clone the repository
