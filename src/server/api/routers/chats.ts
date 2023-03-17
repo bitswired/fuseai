@@ -54,6 +54,7 @@ export const chatRouter = createTRPCRouter({
       },
     });
   }),
+
   addToChat: protectedProcedure
     .input(z.object({ id: z.number().int(), message: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -69,8 +70,9 @@ export const chatRouter = createTRPCRouter({
       });
 
       const totalMessageLength = chat.messages.length;
-      const messages = chat.messages
-        .slice(totalMessageLength > 10 ? -10 : totalMessageLength * -1);
+      const messages = chat.messages.slice(
+        totalMessageLength > 10 ? -10 : totalMessageLength * -1
+      );
 
       const openai = await getOpenaiClient();
 
