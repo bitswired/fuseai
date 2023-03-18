@@ -1,14 +1,16 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
 export const settingsRouter = createTRPCRouter({
-  getSettings: publicProcedure.query(async ({ ctx }) => {
-    const settings = await ctx.prisma.setting.findMany({});
+  getSettings: protectedProcedure.query(async ({ ctx }) => {
+    const settings = await ctx.prisma.setting.findMany({
+      where: { userId: ctx.session.user.id },
+    });
 
     return settings[0];
   }),
 
-  upsertSettings: publicProcedure
+  upsertSettings: protectedProcedure
     .input(
       z.object({
         id: z.number().optional(),
@@ -22,6 +24,7 @@ export const settingsRouter = createTRPCRouter({
         },
         create: {
           openaiKey: input.openaiKey,
+          User: { connect: { id: ctx.session.user.id } },
         },
         update: {
           openaiKey: input.openaiKey,

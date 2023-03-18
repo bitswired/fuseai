@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
 const TemplateSchema = z.array(
@@ -6,7 +6,7 @@ const TemplateSchema = z.array(
 );
 
 export const templateRouter = createTRPCRouter({
-  getTemplatesFromRepo: publicProcedure
+  getTemplatesFromRepo: protectedProcedure
     .output(TemplateSchema)
     .query(async ({ ctx }) => {
       const res = await fetch(
@@ -43,15 +43,31 @@ export const templateRouter = createTRPCRouter({
       return TemplateSchema.parse(data);
     }),
 
-  getTemplates: publicProcedure.query(async ({ ctx, input }) => {
-    return ctx.prisma.template.findMany({});
+  getTemplates: protectedProcedure.query(async ({ ctx, input }) => {
+    return ctx.prisma.template.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
   }),
 
-  createTemplate: publicProcedure
-    .input(z.object({ name: z.string(), prompt: z.string() }))
+  upsertTemplate: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().optional(),
+        name: z.string(),
+        prompt: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      const res = await ctx.prisma.template.create({
-        data: {
+      const res = await ctx.prisma.template.upsert({
+        where: { id: input.id ?? -1 },
+        create: {
+          name: input.name,
+          prompt: input.prompt,
+          User: { connect: { id: ctx.session.user.id } },
+        },
+        update: {
           name: input.name,
           prompt: input.prompt,
         },
@@ -59,7 +75,7 @@ export const templateRouter = createTRPCRouter({
       return res;
     }),
 
-  removeTemplate: publicProcedure
+  removeTemplate: protectedProcedure
     .input(z.object({ id: z.number().int() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.template.delete({

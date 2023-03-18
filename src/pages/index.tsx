@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 
-import { api } from "@/utils/api";
 import {
   Button,
   Card,
@@ -14,8 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Home: NextPage = () => {
-  const chats = api.chat.getAllChats.useQuery();
-
   return (
     <>
       {/* <Head>
@@ -24,7 +21,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head> */}
       <Stack m="auto" w="max-content" mt={12} align="center">
-        <Title> Welcome To Your Self-Hosted Chat GPT</Title>
+        <Title>Welcome To Your Self-Hosted Chat GPT</Title>
       </Stack>
 
       <SimpleGrid cols={4} m="auto" mt={32} p={64}>

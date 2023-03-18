@@ -30,7 +30,7 @@ interface SearchProps {
 }
 function Search({ filterQuery, setFilterQuery }: SearchProps) {
   const context = api.useContext();
-  const createTemplate = api.templates.createTemplate.useMutation({
+  const createTemplate = api.templates.upsertTemplate.useMutation({
     onSuccess: () => {
       form.reset();
       toggleCreateOpened();
@@ -103,7 +103,7 @@ interface PromptsProps {
 
 function Prompts({ templates, seed, smartSeed }: PromptsProps) {
   const context = api.useContext();
-  const createTemplate = api.templates.createTemplate.useMutation({
+  const createTemplate = api.templates.upsertTemplate.useMutation({
     onSuccess: () => {
       context.invalidate().catch(console.error);
     },
