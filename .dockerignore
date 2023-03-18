@@ -3,6 +3,7 @@
 !prisma
 !public
 !src
+!types
 !.eslintrc.cjs
 !next.config.mjs
 !package.json
