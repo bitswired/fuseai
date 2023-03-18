@@ -15,6 +15,12 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 
 ## How to run
 
+### First create a .env file
+
+If you want a multi-user setup follow `.env.multi-user.example`.
+
+If you don't want to support multiple users, follow: `.env.single-user.example`.
+
 ### Docker Hub (Simplest)
 
 1. `docker pull docker.io/bitswired/ai-chat-app`
