@@ -16,6 +16,9 @@ WORKDIR /src
 COPY . .
 RUN yarn
 ENV NEXT_PUBLIC_MULTI_USER=1
+RUN echo $NEXT_PUBLIC_MULTI_USER
+RUN echo $NEXT_PUBLIC_MULTI_USER
+RUN echo $NEXT_PUBLIC_MULTI_USER
 RUN yarn build \
   && npm prune --omit=dev --omit=optional \
   && npm cache clean --force
