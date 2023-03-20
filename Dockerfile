@@ -20,16 +20,16 @@ RUN yarn build \
   && npm prune --omit=dev --omit=optional \
   && npm cache clean --force
 
-FROM base-single-user as single-user
+FROM node:lts-alpine as single-user
 WORKDIR /app
-COPY --from=build /src /app
+COPY --from=build-single-user /src /app
 COPY startup.sh .
 RUN chmod +x startup.sh
 ENTRYPOINT ["/app/startup.sh"]
 
-FROM base-multi-user as multi-user
+FROM node:lts-alpine as multi-user
 WORKDIR /app
-COPY --from=build /src /app
+COPY --from=build-multi-user /src /app
 COPY startup.sh .
 RUN chmod +x startup.sh
 ENTRYPOINT ["/app/startup.sh"]
