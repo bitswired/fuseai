@@ -28,6 +28,17 @@ jobs:
       with:
         context: .
         push: true
+        target: single-user
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:latest
-          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:1.0.${{ github.run_number }}      
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:single-user-latest
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:single-user-1.0.${{ github.run_number }}      
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: .
+        push: true
+        target: multi-user
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:multi-user-latest
+          ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:multi-user-1.0.${{ github.run_number }}      

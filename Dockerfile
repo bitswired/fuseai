@@ -11,7 +11,15 @@ RUN yarn build \
   && npm prune --omit=dev --omit=optional \
   && npm cache clean --force
 
-FROM base as final
+FROM base as single-user
+WORKDIR /app
+COPY --from=build /src /app
+COPY startup.sh .
+RUN chmod +x startup.sh
+ENTRYPOINT ["/app/startup.sh"]
+
+FROM base as multi-user
+ENV NEXT_PUBLIC_MULTI_USER=1
 WORKDIR /app
 COPY --from=build /src /app
 COPY startup.sh .
