@@ -23,7 +23,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Build and push Docker image
+    - name: Build and push Docker image (Single User)
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: .
@@ -33,7 +33,7 @@ jobs:
           ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:single-user-latest
           ${{ secrets.DOCKER_USERNAME }}/ai-chat-app:single-user-1.0.${{ github.run_number }}      
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image (Multi User)
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: .
