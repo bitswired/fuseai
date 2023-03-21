@@ -13,51 +13,39 @@ https://user-images.githubusercontent.com/19983429/223075269-7e22678c-b44b-41db-
 - Sqlite
 - Mantine (React comoponent library)
 
-## How to run
+## ⚙️ How to run
 
-### First create a .env file
-
-If you want a multi-user setup follow `.env.multi-user.example`.
-
-If you don't want to support multiple users, follow: `.env.single-user.example`.
-
-### Docker Hub (Simplest)
-
-1. `docker pull docker.io/bitswired/ai-chat-app`
-2. `docker run -p 3000:3000 docker.io/bitswired/ai-chat-app`
-
-In order to persist data, you can use a volume to store the Sqlite database like this:
-
-`docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app docker.io/bitswired/ai-chat-app`
-
-### Docker Local
-
-1. Clone the repository
-2. `docker build -t ai-chat-app .`
-3. `docker run -p 3000:3000 ai-chat-app`
-
-In order to persist data, you can use a volume to store the Sqlite database like this:
-
-`docker run -p 3000:3000 -v sqldata:/app/prisma/data ai-chat-app`
-
-### Local
-
-1. Clone the repository
-2. Create a `.env` file containing 2 entries:
-
+### 🧑🏽‍💻 Single User Mode
+(It's an example, replace values with what makes sense in your current setup)
 ```
-DATABASE_URL="file:./db.sqlite"
+docker run -p 3000:3000 \
+  -e DATABASE_URL=file:./db.sqlite \
+  -e NEXTAUTH_SECRET=secret \
+  -e NEXTAUTH_URL=http://localhost:3000/ \
+  -e ADMIN_EMAIL=admin@admin.com \
+  -e ADMIN_PASSWORD=password \
+  bitswired/ai-chat-app:single-user-latest
 ```
 
-2. Run `yarn`
-3. Run `yarn prisma migrate deploy`
-4. Run `yarn build`
-5. Run `yarn start`
-6. Visit localhost:3000/settings
-7. Add your OpenAI API Key
-8. Enjoy your self-hosted ChatGPT
+### 🧑🏽‍💻🧑🏽‍💻 Multi User Mode
+(It's an example, replace values with what makes sense in your current setup)
+```
+docker run \
+-p 3000:3000 \
+-e DATABASE_URL=file:./db.sqlite \
+-e NEXTAUTH_SECRET=secret \
+-e NEXTAUTH_URL=http://localhost:3000 \
+-e ADMIN_EMAIL=youremail@address.com \
+-e NEXT_PUBLIC_MULTI_USER=1 \
+-e EMAIL_SERVER_HOST=smtp.gmail.com \
+-e EMAIL_SERVER_PORT=465 \
+-e EMAIL_SERVER_USER=user@gmail.com \
+-e EMAIL_SERVER_PASSWORD=test \
+-e EMAIL_FROM=ai-chat-app@ai-chat-app.com \
+bitswired/ai-chat-app:multi-user-latest
+```
 
-## Roadmap 🚀
+## 🚀 Roadmap
 
 > Contribution welcomed!
 
