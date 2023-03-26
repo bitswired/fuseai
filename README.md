@@ -45,6 +45,38 @@ docker run \
 bitswired/ai-chat-app:multi-user-latest
 ```
 
+### 🧑🏽‍💻🧑🏽‍💻 Multi User Mode UNRAID ONLY (Modified by barnito)
+(It's an example, replace values with what makes sense in your current setup)
+```
+docker run
+  -d
+  --name='ai-chat-app'
+  --net='bridge'
+  -e TZ="America/New_York"
+  -e HOST_OS="Unraid"
+  -e HOST_HOSTNAME="UnraidServer"
+  -e HOST_CONTAINERNAME="ai-chat-app"
+  -e 'NEXTAUTH_SECRET'='XXXX'
+  -e 'NEXTAUTH_URL'='XXXX'
+  -e 'ADMIN_EMAIL'='XXXX'
+  -e 'ADMIN_PASSWORD'='XXXX'
+  -e 'EMAIL_SERVER_HOST'='smtp.gmail.com'
+  -e 'EMAIL_SERVER_PORT'='465'
+  -e 'EMAIL_SERVER_USER'='XXXX@gmail.com'
+  -e 'EMAIL_SERVER_PASSWORD'='XXXX'
+  -e 'EMAIL_FROM'='ai-chat-app@ai-chat-app.com'
+  -e 'NEXT_PUBLIC_MULTI_USER'='1'
+  -e 'DATABASE_URL'='file:/config/db.sqlite'
+  -e 'PUID'='99'
+  -e 'PGID'='100'
+  -e 'UMASK'='022'
+  -l net.unraid.docker.managed=dockerman
+  -l net.unraid.docker.webui='http://[IP]:[PORT:3000]'
+  -l net.unraid.docker.icon='https://github.com/bitswired/fuseai/raw/main/public/logo.png'
+  -p '3000:3000/tcp'
+  -v '/mnt/user/appdata/ai-chat-app':'/config':'rw' 'bitswired/ai-chat-app:multi-user-latest'
+  ```
+
 ## 🚀 Roadmap
 
 > Contribution welcomed!
