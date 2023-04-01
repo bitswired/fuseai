@@ -86,3 +86,12 @@ docker run
 3. Integrate vocal chat with the Whisper API
 4. Make it more mobile friendly
 5. Overall imporovement of the design
+
+
+## Acknowledgments
+
+I would like to express my gratitude to some early contributors who helped make this GitHub repository possible.
+
+Firstly, a big thank you to [DennisTheD](https://github.com/DennisTheD) for his assistance in identifying and addressing bugs, as well as his help in delivering the initial version of the Docker image with support for database migrations.
+
+Additionally, I would like to extend my appreciation to [barnito](https://github.com/barnito) for his outstanding efforts in integrating UNRAID, and for his generous and friendly support of the community on the Discord platform.
